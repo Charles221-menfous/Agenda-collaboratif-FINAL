@@ -3,171 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda Collaboratif - Septembre 2026</title>
+    <title>Agenda Collaboratif 2026-2027</title>
     <style>
         * { box-sizing: border-box; }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 10px;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            font-size: 20px;
-            margin: 10px 0;
-        }
-        .calendar {
-            display: flex;
-            flex-direction: row;      /* une semaine par colonne */
-            gap: 12px;
-            overflow-x: auto;         /* défilement horizontal */
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 10px;
-            scroll-snap-type: x mandatory;
-        }
-        .week {
-            flex: 0 0 90%;            /* une semaine occupe l'écran sur mobile */
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            scroll-snap-align: start;
-        }
-        .day {
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .day-header {
-            font-weight: bold;
-            font-size: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .day-content {
-            font-size: 13px;
-            margin: 6px 0 4px;
-        }
-        .add-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            cursor: pointer;
-            font-size: 18px;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .add-button:hover {
-            background-color: #45a049;
-        }
-        .devoir {
-            background-color: #e7f3fe;
-            padding: 5px;
-            margin-bottom: 5px;
-            border-radius: 3px;
-            font-size: 12px;
-            border-left: 3px solid #2196F3;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 6px;
-        }
-        .del-button {
-            background: none;
-            border: none;
-            color: #999;
-            font-size: 16px;
-            line-height: 1;
-            cursor: pointer;
-            padding: 0 2px;
-            flex-shrink: 0;
-        }
-        .del-button:hover {
-            color: #c30000;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 5px;
-            width: 90%;
-            max-width: 320px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .modal-header {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .form-group {
-            margin-bottom: 10px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-        .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            font-size: 16px; /* évite le zoom auto sur iOS */
-        }
-        .form-group textarea {
-            height: 60px;
-            resize: none;
-        }
-        .submit-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 8px 15px;
-            cursor: pointer;
-            font-size: 14px;
-            width: 100%;
-        }
-        .submit-button:hover {
-            background-color: #45a049;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover {
-            color: #333;
-        }
-        .important-option {
-            color: #f44336;
-            font-weight: bold;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background-color: #f9f9f9; }
+        h1 { text-align: center; color: #333; font-size: 20px; margin: 10px 0; }
+        .toolbar { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .month-select, .spes-button { padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background: white; }
+        .spes-button { cursor: pointer; }
+        .calendar { display: flex; flex-direction: row; gap: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+        .week { flex: 0 0 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; scroll-snap-align: start; }
+        .day { width: 100%; min-height: 70px; border: 1px solid #ccc; border-radius: 5px; background-color: white; display: flex; flex-direction: column; padding: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .day-header { font-weight: bold; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .day-content { font-size: 13px; margin: 6px 0 2px; }
+        .add-button { background-color: #4CAF50; color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .add-button:hover { background-color: #45a049; }
+        .devoir { background-color: #e7f3fe; padding: 5px; margin-bottom: 5px; border-radius: 3px; font-size: 12px; border-left: 3px solid #2196F3; display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+        .del-button { background: none; border: none; color: #999; font-size: 16px; line-height: 1; cursor: pointer; padding: 0 2px; flex-shrink: 0; }
+        .del-button:hover { color: #c30000; }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: white; margin: 10% auto; padding: 20px; border-radius: 5px; width: 90%; max-width: 320px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); max-height: 80%; overflow-y: auto; }
+        .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 14px; }
+        .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 16px; }
+        .form-group textarea { height: 60px; resize: none; }
+        .submit-button { background-color: #4CAF50; color: white; border: none; border-radius: 3px; padding: 8px 15px; cursor: pointer; font-size: 14px; width: 100%; }
+        .submit-button:hover { background-color: #45a049; }
+        .close { color: #aaa; float: right; font-size: 24px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: #333; }
+        .important-option { color: #f44336; font-weight: bold; }
+        .spe-check { display: block; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 6px; font-size: 15px; cursor: pointer; }
+        .spe-check input { margin-right: 8px; }
 
         .matiere-francais { background-color: #0c85c139; border-left: 3px solid #0c85c1; }
         .matiere-maths { background-color: #ffffff; border-left: 3px solid #e3df0c; }
@@ -190,10 +57,26 @@
     </style>
 </head>
 <body>
-    <h1>Agenda Collaboratif - 2026-2027 </h1>
+    <h1>Agenda Collaboratif 2026-2027</h1>
+
+    <div class="toolbar">
+        <select id="monthSelect" class="month-select"></select>
+        <button class="spes-button" onclick="ouvrirChoixSpes()">⚙️ Mes spés</button>
+    </div>
+
     <div class="calendar" id="calendar"></div>
 
-    <!-- Modale pour ajouter un devoir -->
+    <!-- Modale : choix des spécialités (au premier passage) -->
+    <div id="spesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fermerSpes(false)">&times;</span>
+            <div class="modal-header">Quelles spécialités fais-tu ?</div>
+            <div id="spesListe"></div>
+            <button type="button" class="submit-button" onclick="fermerSpes(true)">Valider</button>
+        </div>
+    </div>
+
+    <!-- Modale : ajouter un devoir -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -201,27 +84,7 @@
             <form id="devoirForm">
                 <div class="form-group">
                     <label for="matiere">Matière :</label>
-                    <select id="matiere" required>
-                        <option value="">-- Sélectionnez --</option>
-                        <option value="Français">Français</option>
-                        <option value="Maths Complémentaires">Maths Complémentaires</option>
-                        <option value="Histoire-Géo">Histoire-Géo</option>
-                        <option value="EMC">EMC</option>
-                        <option value="Vie de classe">Vie de classe</option>
-                        <option value="Anglais">Anglais</option>
-                        <option value="Allemand">Allemand</option>
-                        <option value="Espagnol">Espagnol</option>
-                        <option value="Spé Maths">Spé Maths</option>
-                        <option value="Spé Physique">Spé Physique</option>
-                        <option value="Spé SVT">Spé SVT</option>
-                        <option value="Spé NSI">Spé NSI</option>
-                        <option value="Spé HGGSP">Spé HGGSP</option>
-                        <option value="Spé HLP">Spé HLP</option>
-                        <option value="Spé SES">Spé SES</option>
-                        <option value="Spé AMC">Spé AMC</option>
-                        <option value="Foi et société (mdr)">Foi et société (mdr)</option>
-                        <option value="IMPORTANT" class="important-option">IMPORTANT</option>
-                    </select>
+                    <select id="matiere" required></select>
                 </div>
                 <div class="form-group">
                     <label for="description">Description du devoir :</label>
@@ -232,27 +95,36 @@
         </div>
     </div>
 
-    <!-- SDK Firebase (nécessaire pour la synchronisation entre appareils) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+        const JOURS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-       
-        const SEMAINES = [
-            ['2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05', '2026-11-06'],
-            ['2026-11-07', '2026-11-08', '2026-11-09', '2026-11-10', '2026-11-11'],
-            ['2026-11-14', '2026-11-15', '2026-11-16', '2026-11-17', '2026-11-18'],
-            ['2026-11-21', '2026-11-22', '2026-11-23', '2026-11-24', '2026-11-25'],
-            ['2026-11-28', '2026-11-29', '2026-11-30', '2026-12-01','2026-12-02'],
+        // Année scolaire : septembre 2026 -> juillet 2027
+        const MOIS_SCOLAIRES = [];
+        for (let m = 8; m <= 11; m++) MOIS_SCOLAIRES.push('2026-' + String(m + 1).padStart(2, '0'));
+        for (let m = 0; m <= 6; m++) MOIS_SCOLAIRES.push('2027-' + String(m + 1).padStart(2, '0'));
+
+        // Liste des spécialités (à compléter par l'utilisateur)
+        // matiere = nom utilisé dans la liste déroulante et la base de données
+        const SPES = [
+            { id: 'spe-maths-canchon', label: 'Spé Maths - Mme Canchon', matiere: 'Spé Maths' },
+            { id: 'spe-maths-weber', label: 'Spé Maths - Mr Weber', matiere: 'Spé Maths' },
+            { id: 'spe-svt-afflalo', label: 'Spé SVT - Mme Afflalo', matiere: 'Spé SVT' }
+            // Complète ici : { id: 'unique', label: 'Spé Physique - M. X', matiere: 'Spé Physique' },
         ];
 
-        let currentDate = null;
+        // Tronc commun : toujours affiché
+        const TRONC_COMMUN = ['Français', 'Maths Complémentaires', 'Histoire-Géo', 'EMC',
+                               'Vie de classe', 'Anglais', 'Allemand', 'Espagnol',
+                               'Foi et société (mdr)', 'IMPORTANT'];
 
-        // --- Synchronisation Firebase Firestore (multi-appareils) ---
-        // ⚠️ Remplace les valeurs ci-dessous par celles de TON projet Firebase
-        // (Console Firebase → Paramètres du projet → Vos applications → Config)
+        let currentMonth = null;
+        let currentDate = null;
+        let mesSpes = []; // matières de spé sélectionnées, ex. ['Spé Maths']
+
         const firebaseConfig = {
             apiKey: "AIzaSyBWmsZxPdg264JOhy72Apb-BvCYy8wy1KM",
             authDomain: "agenda-collaboratif-29308.firebaseapp.com",
@@ -264,16 +136,14 @@
 
         let db = null;
         let useFirestore = false;
+        let desinscription = null;
 
-        // Fallback local si Firebase n'est pas encore configuré
-        const STORAGE_KEY = 'agenda-septembre-2026';
+        function localKey() { return 'agenda-' + currentMonth; }
         function loadLocal() {
-            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+            try { return JSON.parse(localStorage.getItem(localKey())) || {}; }
             catch (e) { return {}; }
         }
-        function saveLocal(devoirs) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(devoirs));
-        }
+        function saveLocal(devoirs) { localStorage.setItem(localKey(), JSON.stringify(devoirs)); }
 
         try {
             firebase.initializeApp(firebaseConfig);
@@ -283,112 +153,139 @@
             console.warn('Firebase non configuré : sauvegarde locale uniquement.');
         }
 
-        // Affiche un devoir dans sa journée (avec bouton supprimer)
-        function renderDevoir(date, devoir, id) {
-            const dayElement = document.querySelector(`[data-date="${date}"] .day-content`);
-            const devoirElement = document.createElement('div');
-            devoirElement.className = 'devoir ' + matiereClass(devoir.matiere);
-
-            const text = document.createElement('span');
-            text.innerHTML = `<strong>${devoir.matiere} :</strong> ${devoir.description}`;
-
-            const del = document.createElement('button');
-            del.className = 'del-button';
-            del.textContent = '×';
-            del.title = 'Supprimer';
-            del.addEventListener('click', () => supprimerDevoir(date, id));
-            devoirElement.dataset.id = id;
-
-            devoirElement.appendChild(text);
-            devoirElement.appendChild(del);
-            dayElement.appendChild(devoirElement);
+        function moisLabel(moisStr) {
+            const [annee, mois] = moisStr.split('-');
+            return MOIS[parseInt(mois, 10) - 1] + ' ' + annee;
         }
 
-        // Réaffiche tous les devoirs (depuis Firestore en temps réel, sinon local)
-        function renderAllDevoirs() {
-            document.querySelectorAll('.day-content').forEach(el => el.innerHTML = '');
-            if (useFirestore) {
-                db.collection('devoirs').get().then(snap => {
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        renderDevoir(d.date, d, doc.id);
-                    });
-                });
-            } else {
-                const devoirs = loadLocal();
-                Object.keys(devoirs).forEach(date => {
-                    devoirs[date].forEach((devoir, i) => renderDevoir(date, devoir, date + '-' + i));
-                });
+        // Toutes les matières visibles pour cet utilisateur
+        function matieresVisibles() {
+            return TRONC_COMMUN.concat(mesSpes);
+        }
+
+        function matiereVisible(matiere) {
+            return matieresVisibles().includes(matiere);
+        }
+
+        // --- Choix des spécialités ---
+        function ouvrirChoixSpes() {
+            const liste = document.getElementById('spesListe');
+            liste.innerHTML = '';
+            SPES.forEach(spe => {
+                const lab = document.createElement('label');
+                lab.className = 'spe-check';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.value = spe.matiere;
+                cb.dataset.speId = spe.id;
+                cb.checked = mesSpes.includes(spe.matiere);
+                lab.appendChild(cb);
+                lab.appendChild(document.createTextNode(spe.label));
+                liste.appendChild(lab);
+            });
+            document.getElementById('spesModal').style.display = 'block';
+        }
+
+        function fermerSpes(valider) {
+            if (valider) {
+                const cochees = Array.from(document.querySelectorAll('#spesListe input:checked'))
+                    .map(cb => cb.value);
+                // dédoublonne (ex. les deux groupes de Spé Maths)
+                mesSpes = [...new Set(cochees)];
+                localStorage.setItem('agenda-mes-spes', JSON.stringify(mesSpes));
+            }
+            document.getElementById('spesModal').style.display = 'none';
+            construireSelectMatieres();
+            afficherDevoirsMois();
+        }
+
+        function chargerMesSpes() {
+            try { mesSpes = JSON.parse(localStorage.getItem('agenda-mes-spes')) || []; }
+            catch (e) { mesSpes = []; }
+            if (!localStorage.getItem('agenda-mes-spes')) {
+                ouvrirChoixSpes(); // premier passage sur la page
             }
         }
 
-        function supprimerDevoir(date, id) {
-            if (useFirestore) {
-                db.collection('devoirs').doc(id).delete();
-            } else {
-                const devoirs = loadLocal();
-                const i = parseInt(id.split('-')[1], 10);
-                if (devoirs[date]) {
-                    devoirs[date].splice(i, 1);
-                    if (devoirs[date].length === 0) delete devoirs[date];
-                    saveLocal(devoirs);
-                }
-            }
-            renderAllDevoirs();
-        }
-
-        // Synchronisation en TEMPS RÉEL : si quelqu'un ajoute un devoir
-        // sur un autre appareil, il apparaît automatiquement ici.
-        function activerSyncTempsReel() {
-            if (!useFirestore) return;
-            db.collection('devoirs').onSnapshot(snap => {
-                document.querySelectorAll('.day-content').forEach(el => el.innerHTML = '');
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    renderDevoir(d.date, d, doc.id);
-                });
+        // Liste déroulante des matières : tronc commun + spés choisies
+        function construireSelectMatieres() {
+            const select = document.getElementById('matiere');
+            select.innerHTML = '<option value="">-- Sélectionnez --</option>';
+            matieresVisibles().forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                if (m === 'IMPORTANT') opt.className = 'important-option';
+                select.appendChild(opt);
             });
         }
 
-        function jourLabel(dateStr) {
-            const d = new Date(dateStr + 'T00:00:00');
-            // getDay : 0=dimanche ... 6=samedi ; lundi=1
-            return JOURS[(d.getDay() + 6) % 7] + ' ' + d.getDate();
+        // --- Menu des mois ---
+        function buildMenu() {
+            const select = document.getElementById('monthSelect');
+            MOIS_SCOLAIRES.forEach(mois => {
+                const opt = document.createElement('option');
+                opt.value = mois;
+                opt.textContent = moisLabel(mois);
+                select.appendChild(opt);
+            });
+            const today = new Date();
+            const courant = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+            currentMonth = MOIS_SCOLAIRES.includes(courant) ? courant : MOIS_SCOLAIRES[0];
+            select.value = currentMonth;
+            select.addEventListener('change', () => {
+                currentMonth = select.value;
+                buildCalendar();
+                afficherDevoirsMois();
+            });
         }
 
+        // --- Calendrier : semaines en colonnes ---
         function buildCalendar() {
             const calendar = document.getElementById('calendar');
-            SEMAINES.forEach(semaine => {
-                const week = document.createElement('div');
-                week.className = 'week';
-                semaine.forEach(date => {
-                    const day = document.createElement('div');
-                    day.className = 'day';
-                    day.dataset.date = date;
-                    const header = document.createElement('div');
-                    header.className = 'day-header';
-                    header.innerHTML = '<span></span>';
-                    header.firstChild.textContent = jourLabel(date);
+            calendar.innerHTML = '';
+            const [annee, mois] = currentMonth.split('-').map(Number);
+            const nbJours = new Date(annee, mois, 0).getDate();
 
-                    const btn = document.createElement('button');
-                    btn.className = 'add-button';
-                    btn.textContent = '+';
-                    btn.addEventListener('click', () => openModal(date));
-                    header.appendChild(btn);
+            let semaine = null;
+            for (let j = 1; j <= nbJours; j++) {
+                const date = currentMonth + '-' + String(j).padStart(2, '0');
+                const d = new Date(date + 'T00:00:00');
+                const jourSemaine = d.getDay(); // 0 = dimanche
 
-                    const content = document.createElement('div');
-                    content.className = 'day-content';
+                // nouvelle colonne chaque lundi (ou au premier jour du mois)
+                if (jourSemaine === 1 || !semaine) {
+                    semaine = document.createElement('div');
+                    semaine.className = 'week';
+                    calendar.appendChild(semaine);
+                }
 
-                    day.appendChild(header);
-                    day.appendChild(content);
-                    week.appendChild(day);
-                });
-                calendar.appendChild(week);
-            });
-            renderAllDevoirs(); // affiche les devoirs sauvegardés
+                const day = document.createElement('div');
+                day.className = 'day';
+                day.dataset.date = date;
+
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                const label = document.createElement('span');
+                label.textContent = JOURS[jourSemaine] + ' ' + j;
+                header.appendChild(label);
+
+                const btn = document.createElement('button');
+                btn.className = 'add-button';
+                btn.textContent = '+';
+                btn.addEventListener('click', () => openModal(date));
+                header.appendChild(btn);
+
+                const content = document.createElement('div');
+                content.className = 'day-content';
+
+                day.appendChild(header);
+                day.appendChild(content);
+                semaine.appendChild(day);
+            }
+            renderLocalOuRien();
         }
 
-        // Mapping explicite matière -> classe CSS
         const CLASSES = {
             'Français': 'matiere-francais',
             'Maths Complémentaires': 'matiere-maths',
@@ -410,9 +307,75 @@
             'Foi et société (mdr)': 'matiere-foi-et-societe',
             'IMPORTANT': 'matiere-important'
         };
+        function matiereClass(matiere) { return CLASSES[matiere] || 'devoir'; }
 
-        function matiereClass(matiere) {
-            return CLASSES[matiere] || 'devoir';
+        function renderDevoir(date, devoir, id) {
+            if (!matiereVisible(devoir.matiere)) return; // filtre par spés choisies
+            const dayElement = document.querySelector('[data-date="' + date + '"] .day-content');
+            if (!dayElement) return;
+            const devoirElement = document.createElement('div');
+            devoirElement.className = 'devoir ' + matiereClass(devoir.matiere);
+
+            const text = document.createElement('span');
+            text.innerHTML = '<strong>' + devoir.matiere + ' :</strong> ' + devoir.description;
+
+            const del = document.createElement('button');
+            del.className = 'del-button';
+            del.textContent = '×';
+            del.title = 'Supprimer';
+            del.addEventListener('click', () => supprimerDevoir(date, id));
+            devoirElement.dataset.id = id;
+
+            devoirElement.appendChild(text);
+            devoirElement.appendChild(del);
+            dayElement.appendChild(devoirElement);
+        }
+
+        function renderLocalOuRien() {
+            if (useFirestore) return;
+            const devoirs = loadLocal();
+            Object.keys(devoirs).forEach(date => {
+                devoirs[date].forEach((devoir, i) => renderDevoir(date, devoir, 'local-' + i));
+            });
+        }
+
+        // SEUL flux d'affichage Firestore (corrige le bug des doublons)
+        function afficherDevoirsMois() {
+            if (!useFirestore) {
+                document.querySelectorAll('.day-content').forEach(el => el.innerHTML = '');
+                renderLocalOuRien();
+                return;
+            }
+            if (desinscription) desinscription();
+            desinscription = db.collection('devoirs')
+                .where('mois', '==', currentMonth)
+                .onSnapshot(snap => {
+                    document.querySelectorAll('.day-content').forEach(el => el.innerHTML = '');
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        renderDevoir(d.date, d, doc.id);
+                    });
+                }, err => {
+                    console.error(err);
+                    alert("Erreur de lecture de la base : " + err.code);
+                });
+        }
+
+        function supprimerDevoir(date, id) {
+            if (useFirestore) {
+                db.collection('devoirs').doc(id).delete()
+                  .catch(err => alert("Erreur de suppression : " + err.code));
+            } else {
+                const devoirs = loadLocal();
+                const i = parseInt(id.split('-')[1], 10);
+                if (devoirs[date]) {
+                    devoirs[date].splice(i, 1);
+                    if (devoirs[date].length === 0) delete devoirs[date];
+                    saveLocal(devoirs);
+                }
+                document.querySelectorAll('.day-content').forEach(el => el.innerHTML = '');
+                renderLocalOuRien();
+            }
         }
 
         function openModal(date) {
@@ -435,36 +398,38 @@
                 return;
             }
 
-            const dayElement = document.querySelector(`[data-date="${currentDate}"] .day-content`);
-
             if (useFirestore) {
-                // Enregistrement en ligne : visible sur tous les appareils
                 db.collection('devoirs').add({
                     date: currentDate,
+                    mois: currentMonth,
                     matiere: matiere,
                     description: description
-                }).then(() => renderAllDevoirs());
+                }).catch(err => {
+                    console.error(err);
+                    alert("Erreur d'enregistrement : " + err.code);
+                });
             } else {
-                // Sauvegarde locale (si Firebase n'est pas configuré)
                 const devoirs = loadLocal();
                 if (!devoirs[currentDate]) devoirs[currentDate] = [];
                 devoirs[currentDate].push({ matiere, description });
                 saveLocal(devoirs);
-                renderAllDevoirs();
+                document.querySelectorAll('.day-content').forEach(el => el.innerHTML = '');
+                renderLocalOuRien();
             }
 
             closeModal();
         }
 
         window.onclick = function(event) {
-            const modal = document.getElementById('modal');
-            if (event.target === modal) {
-                closeModal();
-            }
+            if (event.target === document.getElementById('modal')) closeModal();
+            if (event.target === document.getElementById('spesModal')) fermerSpes(true);
         }
 
+        chargerMesSpes();
+        construireSelectMatieres();
+        buildMenu();
         buildCalendar();
-        activerSyncTempsReel();
+        afficherDevoirsMois();
     </script>
 </body>
 </html>
