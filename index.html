@@ -10,7 +10,7 @@
         h1 { text-align: center; color: #333; font-size: 20px; margin: 10px 0; }
         .toolbar { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .month-select, .spes-button { padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background: white; }
-        .spes-button { background-color: #4c9daf; cursor: pointer; }
+        .spes-button { color: black; background-color: #4c9daf; cursor: pointer; }
         .spes-button:hover { background-color: #4586a0; cursor: pointer; }
         .calendar { display: flex; flex-direction: row; gap: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; scroll-snap-type: x mandatory; }
         .week { flex: 0 0 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; scroll-snap-align: start; }
@@ -29,8 +29,8 @@
         .form-group label { display: block; margin-bottom: 5px; font-size: 14px; }
         .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 16px; }
         .form-group textarea { height: 60px; resize: none; }
-        .submit-button { background-color: #4CAF50; color: white; border: none; border-radius: 3px; padding: 8px 15px; cursor: pointer; font-size: 14px; width: 100%; }
-        .submit-button:hover { background-color: #45a049; }
+        .submit-button { background-color: #4c9daf; color: white; border: none; border-radius: 3px; padding: 8px 15px; cursor: pointer; font-size: 14px; width: 100%; }
+        .submit-button:hover { background-color: #4586a0; }
         .close { color: #aaa; float: right; font-size: 24px; font-weight: bold; cursor: pointer; }
         .close:hover { color: #333; }
         .important-option { color: #f44336; font-weight: bold; }
@@ -66,6 +66,7 @@
 
     <div class="calendar" id="calendar"></div>
 
+   
     <div id="spesModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="fermerSpes(false)">&times;</span>
@@ -75,6 +76,7 @@
         </div>
     </div>
 
+  
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -100,10 +102,12 @@
         const JOURS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
         const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
+      
         const MOIS_SCOLAIRES = [];
         for (let m = 8; m <= 11; m++) MOIS_SCOLAIRES.push('2026-' + String(m + 1).padStart(2, '0'));
         for (let m = 0; m <= 6; m++) MOIS_SCOLAIRES.push('2027-' + String(m + 1).padStart(2, '0'));
 
+       
         const SPES = [
             { id: 'spe-maths-canchon', label: 'Spé Maths - Mme Canchon', matiere: 'Spé Maths - Mme Canchon' },
             { id: 'spe-maths-weber', label: 'Spé Maths - Mr Weber', matiere: 'Spé Maths - Mr Weber' },
@@ -113,6 +117,7 @@
             { id: 'matiere-spe-nsi-colin', label: 'Spé NSI - Mr Colin', matiere: 'Spé NSI - Mr Colin' },
             { id: 'spe-hggsp', label: 'Spé HGGSP - Mme Carriou / Mr Brizard', matiere: 'Spé HGGSP - Mme Carriou / Mr Brizard' },
             { id: 'matiere-spe-amc-berenguer', label: 'Spé AMC - Mme Berenguer', matiere: 'Spé AMC - Mme Berenguer' },
+            
         ];
 
         // Tronc commun : toujours affiché
@@ -122,7 +127,7 @@
 
         let currentMonth = null;
         let currentDate = null;
-        let mesSpes = [];
+        let mesSpes = []; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyBWmsZxPdg264JOhy72Apb-BvCYy8wy1KM",
@@ -157,6 +162,7 @@
             return MOIS[parseInt(mois, 10) - 1] + ' ' + annee;
         }
 
+        // Toutes les matières visibles pour cet utilisateur
         function matieresVisibles() {
             return TRONC_COMMUN.concat(mesSpes);
         }
@@ -187,6 +193,7 @@
             if (valider) {
                 const cochees = Array.from(document.querySelectorAll('#spesListe input:checked'))
                     .map(cb => cb.value);
+                // dédoublonne (ex. les deux groupes de Spé Maths)
                 mesSpes = [...new Set(cochees)];
                 localStorage.setItem('agenda-mes-spes', JSON.stringify(mesSpes));
             }
@@ -198,8 +205,14 @@
         function chargerMesSpes() {
             try { mesSpes = JSON.parse(localStorage.getItem('agenda-mes-spes')) || []; }
             catch (e) { mesSpes = []; }
+            if (!localStorage.getItem('agenda-mes-spes')) {
+                ouvrirChoixSpes(); // premier passage sur la page
+            }
         }
 
+        
+
+        // Liste déroulante des matières : tronc commun + spés choisies
         function construireSelectMatieres() {
             const select = document.getElementById('matiere');
             select.innerHTML = '<option value="">-- Sélectionnez --</option>';
@@ -212,6 +225,7 @@
             });
         }
 
+        // --- Menu des mois ---
         function buildMenu() {
             const select = document.getElementById('monthSelect');
             MOIS_SCOLAIRES.forEach(mois => {
@@ -231,6 +245,7 @@
             });
         }
 
+        // --- Calendrier : semaines en colonnes ---
         function buildCalendar() {
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = '';
@@ -243,6 +258,7 @@
                 const d = new Date(date + 'T00:00:00');
                 const jourSemaine = d.getDay(); // 0 = dimanche
 
+                // nouvelle colonne chaque lundi (ou au premier jour du mois)
                 if (jourSemaine === 1 || !semaine) {
                     semaine = document.createElement('div');
                     semaine.className = 'week';
@@ -297,7 +313,7 @@
         function matiereClass(matiere) { return CLASSES[matiere] || 'devoir'; }
 
         function renderDevoir(date, devoir, id) {
-            if (!matiereVisible(devoir.matiere)) return;
+            if (!matiereVisible(devoir.matiere)) return; // filtre par spés choisies
             const dayElement = document.querySelector('[data-date="' + date + '"] .day-content');
             if (!dayElement) return;
             const devoirElement = document.createElement('div');
@@ -326,6 +342,7 @@
             });
         }
 
+        // SEUL flux d'affichage Firestore (corrige le bug des doublons)
         function afficherDevoirsMois() {
             if (!useFirestore) {
                 document.querySelectorAll('.day-content').forEach(el => el.innerHTML = '');
@@ -416,7 +433,6 @@
         buildMenu();
         buildCalendar();
         afficherDevoirsMois();
-        ouvrirChoixSpes(); // l'encadré des spés s'affiche à CHAQUE arrivée sur la page
     </script>
 </body>
 </html>
