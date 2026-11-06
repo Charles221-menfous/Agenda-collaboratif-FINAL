@@ -148,7 +148,7 @@
         let currentMonth = null;
         let currentDate = null;
         let mesSpes = [];
-        let modificationEnCours = null; // id du devoir en cours de correction
+        let modificationEnCours = null; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyBWmsZxPdg264JOhy72Apb-BvCYy8wy1KM",
@@ -327,7 +327,7 @@
         };
         function matiereClass(matiere) { return CLASSES[matiere] || 'devoir'; }
 
-        // Ferme tous les menus ouverts
+        
         function fermerMenus() {
             document.querySelectorAll('.devoir-menu.ouvert').forEach(m => m.classList.remove('ouvert'));
         }
@@ -347,7 +347,7 @@
             text.className = 'texte-devoir';
             text.innerHTML = '<strong>' + devoir.matiere + ' :</strong> ' + devoir.description;
 
-            // --- Bouton "3 petits points" + menu d'options ---
+            
             const menuButton = document.createElement('button');
             menuButton.className = 'menu-button';
             menuButton.textContent = '⋮';
@@ -364,7 +364,7 @@
             menu.className = 'devoir-menu';
 
             const optionCorriger = document.createElement('button');
-            optionCorriger.textContent = '✏️ Corriger';
+            optionCorriger.textContent = ' Corriger';
             optionCorriger.addEventListener('click', () => {
                 fermerMenus();
                 corrigerDevoir(date, devoir, id);
@@ -372,7 +372,7 @@
 
             const optionSupprimer = document.createElement('button');
             optionSupprimer.className = 'option-supprimer';
-            optionSupprimer.textContent = '🗑️ Supprimer';
+            optionSupprimer.textContent = ' Supprimer';
             optionSupprimer.addEventListener('click', () => {
                 fermerMenus();
                 supprimerDevoir(date, id);
