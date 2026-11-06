@@ -19,11 +19,20 @@
         .day-content { font-size: 13px; margin: 6px 0 2px; }
         .add-button { background-color: #4c9daf; color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .add-button:hover { background-color: #4586a0; }
-        .devoir { background-color: #e7f3fe; padding: 5px; margin-bottom: 5px; border-radius: 3px; font-size: 12px; border-left: 3px solid #2196F3; display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+        .devoir { background-color: #e7f3fe; padding: 5px; margin-bottom: 5px; border-radius: 3px; font-size: 12px; border-left: 3px solid #2196F3; display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; overflow: hidden; position: relative; }
+        .devoir span.texte-devoir { overflow-wrap: break-word; word-break: break-word; min-width: 0; white-space: normal; }
         .devoir-evaluation { border: 2px solid #d40000; border-left: 5px solid #d40000; background-color: #ffebee; font-weight: bold; }
-        .del-button { background: none; border: none; color: #999; font-size: 16px; line-height: 1; cursor: pointer; padding: 0 2px; flex-shrink: 0; }
-        .del-button:hover { color: #c30000; }
-        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+
+        /* Bouton 3 points + menu d'options */
+        .menu-button { background: none; border: none; color: #555; font-size: 20px; font-weight: bold; line-height: 1; cursor: pointer; padding: 0 4px; flex-shrink: 0; border-radius: 4px; }
+        .menu-button:hover { color: #2196F3; background-color: rgba(0,0,0,0.06); }
+        .devoir-menu { display: none; position: absolute; right: 2px; top: 26px; background: white; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 5; min-width: 130px; overflow: hidden; }
+        .devoir-menu.ouvert { display: block; }
+        .devoir-menu button { display: block; width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; cursor: pointer; }
+        .devoir-menu button:hover { background-color: #f0f0f0; }
+        .devoir-menu .option-supprimer { color: #c30000; font-weight: bold; }
+
+        .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: white; margin: 10% auto; padding: 20px; border-radius: 5px; width: 90%; max-width: 320px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); max-height: 80%; overflow-y: auto; }
         .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
         .form-group { margin-bottom: 10px; }
@@ -51,8 +60,8 @@
         .matiere-spe-maths-canchon { background-color: #806a076c; border-left: 3px solid #806a07; }
         .matiere-spe-maths-weber { background-color: #806a077c; border-left: 3px solid #806a07; }
         .matiere-spe-physique-diop { background-color: #1601645b; border-left: 3px solid #170164; }
-         .matiere-spe-physique-rouzic { background-color: #1601645b; border-left: 3px solid #170164; }
-         .matiere-spe-physique-casaglia { background-color: #1601645b; border-left: 3px solid #170164; }
+        .matiere-spe-physique-rouzic { background-color: #1601645b; border-left: 3px solid #170164; }
+        .matiere-spe-physique-casaglia { background-color: #1601645b; border-left: 3px solid #170164; }
         .matiere-spe-svt-afflalo { background-color: #3e682252; border-left: 3px solid #3e6822; }
         .matiere-spe-nsi-colin { background-color: #17336a56; border-left: 3px solid #17336a; }
         .matiere-spe-hggsp { background-color: #9600a44f; border-left: 3px solid #9600a4; }
@@ -62,7 +71,6 @@
         .matiere-ens-scien-svt { background-color: #ff990053; border-left: 3px solid #ff9800; }
         .matiere-ens-scien-physique { background-color: #ff990053; border-left: 3px solid #ff9800; }
         .matiere-important { background-color: #c3000056; border-left: 3px solid #c30000; font-weight: bold; }
-        
     </style>
 </head>
 <body>
@@ -87,7 +95,7 @@
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <div class="modal-header">Ajouter un devoir</div>
+            <div class="modal-header" id="modalTitre">Ajouter un devoir</div>
             <form id="devoirForm">
                 <div class="form-group">
                     <label for="matiere">Matière :</label>
@@ -101,7 +109,7 @@
                     <input type="checkbox" id="evaluation">
                     📝 Évaluation
                 </label>
-                <button type="button" class="submit-button" onclick="addDevoir()">Ajouter</button>
+                <button type="button" class="submit-button" id="boutonValider" onclick="addDevoir()">Ajouter</button>
             </form>
         </div>
     </div>
@@ -120,7 +128,7 @@
         const SPES = [
             { id: 'option-grec-latin', label: 'Option latin/grec', matiere: 'Option latin/grec' },
             { id: 'spe-maths-canchon', label: 'Spé Maths - Mme Canchon', matiere: 'Spé Maths - Mme Canchon' },
-             { id: 'matiere-spe-ses', label: 'Spé SES - Mme Reich', matiere: 'Spé Maths - Mme Reich' },
+            { id: 'matiere-spe-ses', label: 'Spé SES - Mme Reich', matiere: 'Spé SES - Mme Reich' },
             { id: 'spe-maths-weber', label: 'Spé Maths - Mr Weber', matiere: 'Spé Maths - Mr Weber' },
             { id: 'spe-svt-afflalo', label: 'Spé SVT - Mme Afflalo', matiere: 'Spé SVT - Mme Afflalo' },
             { id: 'matiere-spe-physique-diop', label: 'Spé Physique-Chimie - Mr Diop', matiere: 'Spé Physique-Chimie - Mr Diop' },
@@ -129,11 +137,10 @@
             { id: 'spe-hlp', label: 'Spé HLP - Mme Cattelan / Mme Ionita', matiere: 'Spé HLP - Mme Cattelan / Mme Ionita' },
             { id: 'matiere-spe-nsi-colin', label: 'Spé NSI - Mr Colin', matiere: 'Spé NSI - Mr Colin' },
             { id: 'spe-maths-comple', label: 'Maths Complémentaires', matiere: 'Maths Complémentaires' },
-            { id: 'spe-hggsp', label: 'Spé HGGSP - Mme Carriou / Mr Brizard', matiere: 'Spé HGGSP - Mme Cariou / Mr Brizard' },
-            { id: 'matiere-spe-amc-berenguer', label: 'Spé AMC - Mme Berenguer / Mme Brunet Teixier', matiere: 'Spé AMC - Mme Berenguer / Mme Brunet Teixie' },
+            { id: 'spe-hggsp', label: 'Spé HGGSP - Mme Carriou / Mr Brizard', matiere: 'Spé HGGSP - Mme Carriou / Mr Brizard' },
+            { id: 'matiere-spe-amc-berenguer', label: 'Spé AMC - Mme Berenguer / Mme Brunet Teixier', matiere: 'Spé AMC - Mme Berenguer / Mme Brunet Teixier' },
         ];
 
-       
         const TRONC_COMMUN = ['Français', 'Enseignement Scientifique SVT', 'Enseignement Scientifique Physique-Chimie', 'Histoire-Géo', 'EMC',
                                 'Anglais', 'Allemand', 'Espagnol',
                                'IMPORTANT'];
@@ -141,6 +148,7 @@
         let currentMonth = null;
         let currentDate = null;
         let mesSpes = [];
+        let modificationEnCours = null; // id du devoir en cours de correction
 
         const firebaseConfig = {
             apiKey: "AIzaSyBWmsZxPdg264JOhy72Apb-BvCYy8wy1KM",
@@ -259,7 +267,7 @@
             for (let j = 1; j <= nbJours; j++) {
                 const date = currentMonth + '-' + String(j).padStart(2, '0');
                 const d = new Date(date + 'T00:00:00');
-                const jourSemaine = d.getDay(); 
+                const jourSemaine = d.getDay();
 
                 if (jourSemaine === 1 || !semaine) {
                     semaine = document.createElement('div');
@@ -295,26 +303,34 @@
 
         const CLASSES = {
             'Français': 'matiere-francais',
-            'Maths Complémentaires': 'matiere-maths',
+            'Maths Complémentaires': 'matiere-maths-comple',
             'Histoire-Géo': 'matiere-histoire-geo',
             'EMC': 'matiere-emc',
             'Anglais': 'matiere-anglais',
             'Allemand': 'matiere-allemand',
             'Espagnol': 'matiere-espagnol',
+            'Option latin/grec': 'option-grec-latin',
+            'Enseignement Scientifique SVT': 'matiere-ens-scien-svt',
+            'Enseignement Scientifique Physique-Chimie': 'matiere-ens-scien-physique',
             'Spé SES - Mme Reich': 'matiere-spe-ses',
             'Spé Maths - Mme Canchon': 'matiere-spe-maths-canchon',
             'Spé Maths - Mr Weber': 'matiere-spe-maths-weber',
             'Spé Physique-Chimie - Mr Diop': 'matiere-spe-physique-diop',
             'Spé Physique-Chimie - Mr Le Rouzic': 'matiere-spe-physique-rouzic',
-            'Spé Physique-Chimie - Mr Casaglia': 'matiere-spe-physique-casaglia',            
+            'Spé Physique-Chimie - Mr Casaglia': 'matiere-spe-physique-casaglia',
             'Spé SVT - Mme Afflalo': 'matiere-spe-svt-afflalo',
             'Spé NSI - Mr Colin': 'matiere-spe-nsi-colin',
             'Spé HGGSP - Mme Carriou / Mr Brizard': 'matiere-spe-hggsp',
             'Spé HLP - Mme Cattelan / Mme Ionita': 'matiere-spe-hlp',
-            'Spé AMC - Mme Berenguer / Mme Brunet Teixie': 'matiere-spe-amc-berenguer',
+            'Spé AMC - Mme Berenguer / Mme Brunet Teixier': 'matiere-spe-amc-berenguer',
             'IMPORTANT': 'matiere-important',
         };
         function matiereClass(matiere) { return CLASSES[matiere] || 'devoir'; }
+
+        // Ferme tous les menus ouverts
+        function fermerMenus() {
+            document.querySelectorAll('.devoir-menu.ouvert').forEach(m => m.classList.remove('ouvert'));
+        }
 
         function renderDevoir(date, devoir, id) {
             if (!matiereVisible(devoir.matiere)) return;
@@ -323,23 +339,52 @@
             const devoirElement = document.createElement('div');
             devoirElement.className = 'devoir ' + matiereClass(devoir.matiere);
 
-            
             if (devoir.evaluation) {
                 devoirElement.classList.add('devoir-evaluation');
             }
 
             const text = document.createElement('span');
+            text.className = 'texte-devoir';
             text.innerHTML = '<strong>' + devoir.matiere + ' :</strong> ' + devoir.description;
 
-            const del = document.createElement('button');
-            del.className = 'del-button';
-            del.textContent = '×';
-            del.title = 'Supprimer';
-            del.addEventListener('click', () => supprimerDevoir(date, id));
+            // --- Bouton "3 petits points" + menu d'options ---
+            const menuButton = document.createElement('button');
+            menuButton.className = 'menu-button';
+            menuButton.textContent = '⋮';
+            menuButton.title = 'Options';
+            menuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = devoirElement.querySelector('.devoir-menu');
+                const dejaOuvert = menu.classList.contains('ouvert');
+                fermerMenus();
+                if (!dejaOuvert) menu.classList.add('ouvert');
+            });
+
+            const menu = document.createElement('div');
+            menu.className = 'devoir-menu';
+
+            const optionCorriger = document.createElement('button');
+            optionCorriger.textContent = '✏️ Corriger';
+            optionCorriger.addEventListener('click', () => {
+                fermerMenus();
+                corrigerDevoir(date, devoir, id);
+            });
+
+            const optionSupprimer = document.createElement('button');
+            optionSupprimer.className = 'option-supprimer';
+            optionSupprimer.textContent = '🗑️ Supprimer';
+            optionSupprimer.addEventListener('click', () => {
+                fermerMenus();
+                supprimerDevoir(date, id);
+            });
+
+            menu.appendChild(optionCorriger);
+            menu.appendChild(optionSupprimer);
             devoirElement.dataset.id = id;
 
             devoirElement.appendChild(text);
-            devoirElement.appendChild(del);
+            devoirElement.appendChild(menuButton);
+            devoirElement.appendChild(menu);
             dayElement.appendChild(devoirElement);
         }
 
@@ -389,8 +434,26 @@
             }
         }
 
+        // Ouvre la modale pré-remplie pour CORRIGER un devoir existant
+        function corrigerDevoir(date, devoir, id) {
+            modificationEnCours = id;
+            construireSelectMatieres();
+            const select = document.getElementById('matiere');
+            if (matieresVisibles().includes(devoir.matiere)) {
+                select.value = devoir.matiere;
+            }
+            document.getElementById('description').value = devoir.description;
+            document.getElementById('evaluation').checked = !!devoir.evaluation;
+            document.getElementById('modalTitre').textContent = 'Corriger le devoir';
+            document.getElementById('boutonValider').textContent = 'Enregistrer';
+            document.getElementById('modal').style.display = 'block';
+        }
+
         function openModal(date) {
             currentDate = date;
+            modificationEnCours = null;
+            document.getElementById('modalTitre').textContent = 'Ajouter un devoir';
+            document.getElementById('boutonValider').textContent = 'Ajouter';
             document.getElementById('modal').style.display = 'block';
         }
 
@@ -412,20 +475,40 @@
             }
 
             if (useFirestore) {
-                db.collection('devoirs').add({
-                    date: currentDate,
-                    mois: currentMonth,
-                    matiere: matiere,
-                    description: description,
-                    evaluation: evaluation
-                }).catch(err => {
-                    console.error(err);
-                    alert("Erreur d'enregistrement : " + err.code);
-                });
+                if (modificationEnCours) {
+                    // CORRECTION d'un devoir existant
+                    db.collection('devoirs').doc(modificationEnCours).update({
+                        matiere: matiere,
+                        description: description,
+                        evaluation: evaluation
+                    }).catch(err => {
+                        console.error(err);
+                        alert("Erreur d'enregistrement : " + err.code);
+                    });
+                } else {
+                    // Nouveau devoir
+                    db.collection('devoirs').add({
+                        date: currentDate,
+                        mois: currentMonth,
+                        matiere: matiere,
+                        description: description,
+                        evaluation: evaluation
+                    }).catch(err => {
+                        console.error(err);
+                        alert("Erreur d'enregistrement : " + err.code);
+                    });
+                }
             } else {
                 const devoirs = loadLocal();
-                if (!devoirs[currentDate]) devoirs[currentDate] = [];
-                devoirs[currentDate].push({ matiere, description, evaluation });
+                if (modificationEnCours) {
+                    const i = parseInt(modificationEnCours.split('-')[1], 10);
+                    if (devoirs[currentDate] && devoirs[currentDate][i]) {
+                        devoirs[currentDate][i] = { matiere, description, evaluation };
+                    }
+                } else {
+                    if (!devoirs[currentDate]) devoirs[currentDate] = [];
+                    devoirs[currentDate].push({ matiere, description, evaluation });
+                }
                 saveLocal(devoirs);
                 document.querySelectorAll('.day-content').forEach(el => el.innerHTML = '');
                 renderLocalOuRien();
@@ -437,6 +520,10 @@
         window.onclick = function(event) {
             if (event.target === document.getElementById('modal')) closeModal();
             if (event.target === document.getElementById('spesModal')) fermerSpes(true);
+            // ferme les menus ⋮ si on clique ailleurs
+            if (!event.target.closest('.devoir-menu') && !event.target.closest('.menu-button')) {
+                fermerMenus();
+            }
         }
 
         chargerMesSpes();
@@ -444,7 +531,7 @@
         buildMenu();
         buildCalendar();
         afficherDevoirsMois();
-        ouvrirChoixSpes(); 
+        ouvrirChoixSpes();
     </script>
 </body>
 </html>
